@@ -88,9 +88,15 @@ def depthFirstSearch(problem):
     """
   "*** YOUR CODE HERE ***"
   # util.raiseNotDefined()
-  print "Start:", problem.getStartState()
-  print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-  print "Start's successors:", problem.getSuccessors(problem.getStartState())
+  # print "Start:", problem.getStartState()
+  # print "Is the start a goal?", problem.isGoalState(problem.getStartState())
+  # print "Start's successors:", problem.getSuccessors(problem.getStartState())
+  from game import Directions
+
+  agentActions = []
+  startState = problem.getStartState()
+  fridge = util.Stack()
+  explored = set()
 
 
 def breadthFirstSearch(problem):
