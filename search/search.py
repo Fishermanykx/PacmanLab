@@ -93,8 +93,8 @@ def depthFirstSearch(problem):
   # print "Start's successors:", problem.getSuccessors(problem.getStartState())
   from game import Directions
 
+  agentActions = []
   agentState = problem.getStartState()
-  direction = Directions.EAST
   fridge = util.Stack()
   explored = []
   fridge.push((agentState, []))
@@ -106,10 +106,11 @@ def depthFirstSearch(problem):
       state = successor[0]
       action = successor[1]
       if state not in explored:
-        fridge.push((agentState, agentActions + [action]))
+        fridge.push((state, agentActions + [action]))
         # explored.append(state)
       agentState = state
-  return agentActions + [direction]
+  # print agentActions
+  return agentActions + [action]
 
 
 def breadthFirstSearch(problem):

@@ -192,9 +192,9 @@ class PositionSearchProblem(search.SearchProblem):
       self._visitedlist.append(state)
       import __main__
       if '_display' in dir(__main__):
-        if 'drawExpandedCells' in dir(__main__._display):  #@UndefinedVariable
+        if 'drawExpandedCells' in dir(__main__._display):  # @UndefinedVariable
           __main__._display.drawExpandedCells(
-              self._visitedlist)  #@UndefinedVariable
+              self._visitedlist)  # @UndefinedVariable
 
     return isGoal
 
@@ -259,7 +259,7 @@ class StayEastSearchAgent(SearchAgent):
 
   def __init__(self):
     self.searchFunction = search.uniformCostSearch
-    costFn = lambda pos: .5**pos[0]
+    def costFn(pos): return .5**pos[0]
     self.searchType = lambda state: PositionSearchProblem(
         state, costFn, (1, 1), None, False)
 
@@ -274,7 +274,7 @@ class StayWestSearchAgent(SearchAgent):
 
   def __init__(self):
     self.searchFunction = search.uniformCostSearch
-    costFn = lambda pos: 2**pos[0]
+    def costFn(pos): return 2**pos[0]
     self.searchType = lambda state: PositionSearchProblem(state, costFn)
 
 
@@ -356,12 +356,23 @@ class CornersProblem(search.SearchProblem):
     ]:
       # Add a successor state to the successor list if the action is legal
       # Here's a code snippet for figuring out whether a new position hits a wall:
-      #   x,y = currentPosition
-      #   dx, dy = Actions.directionToVector(action)
-      #   nextx, nexty = int(x + dx), int(y + dy)
-      #   hitsWall = self.walls[nextx][nexty]
 
       "*** YOUR CODE HERE ***"
+      #   x,y = currentPosition
+      x, y = state[0]
+      visited_corner = state[1]
+      #   dx, dy = Actions.directionToVector(action)
+      dx, dy = Actions.directionToVector(action)
+      #   nextx, nexty = int(x + dx), int(y + dy)
+      nextx, nexty = int(x + dx), int(y + dy)
+      next_node = (nextx, nexty)
+      #   hitsWall = self.walls[nextx][nexty]
+      hitsWall = self.walls[nextx][nexty]
+      if (not hitsWall):
+        if (next_node in self.corners) and (next_node not in visited_corner):
+          visited_corner.append(next_node)
+        successor = ((next_node, visited_corner), action, 1)
+        successors.append(successor)
 
     self._expanded += 1  # DO NOT CHANGE
     return successors
@@ -399,7 +410,22 @@ def cornersHeuristic(state, problem):
   walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
   "*** YOUR CODE HERE ***"
-  return 0  # Default to trivial solution
+  node = state[0]
+  unvisitedCorner = [item for item in corners if item not in state[1]]
+  hn = minmanhattan(unvisitedCorner, state[0])
+
+  return hn  # Default to trivial solution
+
+
+def minmanhattan(corners, state):
+  if not len(corners):
+    return 0
+  hn = []
+  for loc in corners:
+    distance = abs(loc[0] - pos[0]) + abs(loc[1] - pos[1]) + \
+        minmanhattan([cor for cor in corners if cor != loc], loc)
+    hn.append(distance)
+  return min(hn)
 
 
 class AStarCornersAgent(SearchAgent):
