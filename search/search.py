@@ -151,6 +151,37 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
   """Search the node of least total cost first."""
   "*** YOUR CODE HERE ***"
+  from game import Directions
+
+  agentActions = []
+  agentState = problem.getStartState()
+  fridge = util.PriorityQueue()
+  explored = []
+  fridge.push((agentState, []), 0)
+
+  # Main loop
+  while not fridge.isEmpty():
+    cur_state, agentActions = fridge.pop()
+
+    # goal testing
+    if problem.isGoalState(cur_state):
+      return agentActions
+
+    if cur_state not in explored:
+      successors = problem.getSuccessors(cur_state)
+      explored.append(cur_state)
+
+      for successor in successors:
+        state = successor[0]
+        action = successor[1]
+        if state not in explored:
+          new_actions = agentActions + [action]
+          fridge.push(
+              (state, agentActions + [action]), problem.getCostOfActions(new_actions))
+        agentState = state
+
+  return agentActions + [action]
+
   util.raiseNotDefined()
 
 
