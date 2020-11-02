@@ -463,8 +463,19 @@ def cornersHeuristic(state, problem):
         unvisited_corners.append(cor)
 
   cost = 0
+  cur_posi = position
+  while len(unvisited_corners):
+    possible_distances = []
+    for i in range(len(unvisited_corners)):
+      dist = util.manhattanDistance(cur_posi, unvisited_corners[i])
+      possible_distances.append(dist)
+    min_distance = min(possible_distances)
+    cost += min_distance
+    min_dist_index = possible_distances.index(min_distance)
+    cur_posi = unvisited_corners[min_dist_index]
+    unvisited_corners.remove(cur_posi)
 
-  return   # Default to trivial solution
+  return cost  # Default to trivial solution
 
 
 class AStarCornersAgent(SearchAgent):
