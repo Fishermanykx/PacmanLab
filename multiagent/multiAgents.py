@@ -138,7 +138,7 @@ class MultiAgentSearchAgent(Agent):
   def __init__(self, evalFn='scoreEvaluationFunction', depth='2'):
     self.index = 0  # Pacman is always agent index 0
     self.evaluationFunction = util.lookup(evalFn, globals())
-    self.depth = int(depth)
+    self.depth = int(depth)  # 搜索深度
 
 
 class MinimaxAgent(MultiAgentSearchAgent):
@@ -148,22 +148,27 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
   def getAction(self, gameState):
     """
-          Returns the minimax action from the current gameState using self.depth
-          and self.evaluationFunction.
+    Returns the minimax action from the current gameState using self.depth
+    and self.evaluationFunction.
 
-          Here are some method calls that might be useful when implementing minimax.
+    Here are some method calls that might be useful when implementing minimax.
 
-          gameState.getLegalActions(agentIndex):
-            Returns a list of legal actions for an agent
-            agentIndex=0 means Pacman, ghosts are >= 1
+    gameState.getLegalActions(agentIndex):
+      Returns a list of legal actions for an agent
+      agentIndex=0 means Pacman, ghosts are >= 1
 
-          gameState.generateSuccessor(agentIndex, action):
-            Returns the successor game state after an agent takes an action
+    gameState.generateSuccessor(agentIndex, action):
+      Returns the successor game state after an agent takes an action
 
-          gameState.getNumAgents():
-            Returns the total number of agents in the game
-        """
+    gameState.getNumAgents():
+      Returns the total number of agents in the game
+    """
     "*** YOUR CODE HERE ***"
+    agentIndex = self.index
+    if agentIndex >= gameState.getNumAgents():
+      agentIndex = 0
+      deepness += 1
+
     util.raiseNotDefined()
 
 
