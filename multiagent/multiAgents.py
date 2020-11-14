@@ -14,7 +14,8 @@
 
 from util import manhattanDistance
 from game import Directions
-import random, util
+import random
+import util
 
 from game import Agent
 
@@ -164,12 +165,66 @@ class MinimaxAgent(MultiAgentSearchAgent):
       Returns the total number of agents in the game
     """
     "*** YOUR CODE HERE ***"
-    agentIndex = self.index
-    if agentIndex >= gameState.getNumAgents():
-      agentIndex = 0
-      deepness += 1
+    res_action = ''  # Pacman 将要采取的动作
+    ghost_num = gameState.getNumAgents() - 1  # 第一个 Agent 是pacman
+    pacman_max = float('-Inf')  # 寻找到的最大值的上界
+    pacman_actions = gameState.getLegalActions(self.index)
+
+    for action in pacman_actions:
+      if action == "Stop":
+        continue
+      cur_depth = 0
+      cur_max = self.minValue(
+          gameState.generateSuccessor(self.index, action), cur_depth, 1)  # 从 No.1 ghost 开始找，向下递归
+      if cur_max > pacman_max:
+        pacman_max = cur_max
+        res_action = action
+
+    return res_action
 
     util.raiseNotDefined()
+
+  def minValue(self, gameState, cur_depth, ghost_index):
+    '''
+    description: 当前结点为min结点时的代价，注意多个 ghost 带来的多 min 层的情形
+    param {*}
+    return {*} cost: 当前结点的代价
+    '''
+    cost = float('Inf')
+
+    if gameState.isWin() or gameState.isLose():
+      return self.evaluationFunction(gameState)
+
+    agentActions = gameState.getLegalActions(ghost_index)
+    for action in agentActions:
+      if ghost_index == gameState.getNumAgents()-1:
+        cost = min(cost, self.maxValue(
+            gameState.generateSuccessor(ghost_index, action), cur_depth))
+      else:
+        cost = min(cost, self.minValue(
+            gameState.generateSuccessor(ghost_index, action), cur_depth, ghost_index+1))
+
+    return cost
+
+  def maxValue(self, gameState, cur_depth):
+    '''
+    description: 当前结点为max结点时的代价
+    param {*}
+    return {*} cost: 当前结点的代价
+    '''
+    cost = float('-Inf')
+    cur_depth += 1
+
+    # 递归基
+    if gameState.isWin() or gameState.isLose() or cur_depth >= self.depth:
+      return self.evaluationFunction(gameState)
+
+    agentActions = gameState.getLegalActions(self.index)
+    for action in agentActions:
+      cost = max(cost, self.minValue(
+          gameState.generateSuccessor(self.index, action), cur_depth, 1))
+
+    return cost
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):

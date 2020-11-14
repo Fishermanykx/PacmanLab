@@ -13,7 +13,8 @@
 
 from util import manhattanDistance
 from game import Directions
-import random, util
+import random
+import util
 
 from game import Agent
 
@@ -49,18 +50,18 @@ class ReflexAgent(Agent):
 
     # CASE: ALL GHOSTS SCARED
     if all(time != 0 for time in scaredTimes) and ghostStates[ghostDist.index(
-        nearGhostDist)].scaredTimer >= nearGhostDist:
+            nearGhostDist)].scaredTimer >= nearGhostDist:
       return self._chase(gameState)
 
     # CASE: NEAR GHOST SCARED
     elif ghostStates[ghostDist.index(
-        nearGhostDist)].scaredTimer >= nearGhostDist:
+            nearGhostDist)].scaredTimer >= nearGhostDist:
       return self._chase(gameState)
 
     # CASE: GHOST TOO NEAR
     elif nearGhostDist <= ReflexAgent.ghost_min_dist:
       if ghostStates[ghostDist.index(
-          nearGhostDist)].scaredTimer >= nearGhostDist:
+              nearGhostDist)].scaredTimer >= nearGhostDist:
         return self._chase(gameState)
       else:
         return self._run(gameState)
@@ -134,12 +135,12 @@ class ReflexAgent(Agent):
                         newPos):  # Successor position is a corner
         return float("-Inf")
       if successorDirection == Directions.REVERSE[
-          currentDirection]:  # Successor position is opposite direction of movement (returning)
+              currentDirection]:  # Successor position is opposite direction of movement (returning)
         return float("-Inf")
 
     # CASE: GREATER DISTANCE AFTER SMALLER ONE
     if currentMin > successorMin and successorDirection == Directions.REVERSE[
-        currentDirection]:
+            currentDirection]:
       return float("-Inf")
 
     # ===== SCORE EVALUATION OF COMMON CASES =====
@@ -230,8 +231,8 @@ class ReflexAgent(Agent):
 
     # CASE: RETURNING TO A CORNER
     if self._isCorner(
-        successorGameState,
-        newPos) and successorPacmanDir == Directions.REVERSE[currentPacmanDir]:
+            successorGameState,
+            newPos) and successorPacmanDir == Directions.REVERSE[currentPacmanDir]:
       return float("-Inf")
 
     # ===== SCORE EVALUATION OF COMMON CASES =====
@@ -330,17 +331,17 @@ class ReflexAgent(Agent):
                                   pacmanPos[1], "left")
       return (True, nearGapDist)
     elif ghostPos[0] > pacmanPos[0] and gameState.hasWall(
-        pacmanPos[0] + 1, pacmanPos[1]):  # right
+            pacmanPos[0] + 1, pacmanPos[1]):  # right
       nearGapDist = self._nearGap(gameState, pacmanPos, pacmanPos[0] + 1,
                                   pacmanPos[1], "right")
       return (True, nearGapDist)
     elif ghostPos[1] < pacmanPos[1] and gameState.hasWall(
-        pacmanPos[0], pacmanPos[1] - 1):  # under
+            pacmanPos[0], pacmanPos[1] - 1):  # under
       nearGapDist = self._nearGap(gameState, pacmanPos, pacmanPos[0],
                                   pacmanPos[1] - 1, "under")
       return (True, nearGapDist)
     elif ghostPos[1] > pacmanPos[1] and gameState.hasWall(
-        pacmanPos[0], pacmanPos[1] + 1):  # over
+            pacmanPos[0], pacmanPos[1] + 1):  # over
       nearGapDist = self._nearGap(gameState, pacmanPos, pacmanPos[0],
                                   pacmanPos[1] + 1, "over")
       return (True, nearGapDist)
