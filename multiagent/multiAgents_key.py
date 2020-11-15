@@ -450,15 +450,47 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
   """
-      Your minimax agent with alpha-beta pruning (question 3)
-    """
+    Your minimax agent with alpha-beta pruning (question 3)
+  """
 
   def getAction(self, gameState):
     """
-          Returns the minimax action using self.depth and self.evaluationFunction
-        """
-    "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
+      Returns the minimax action using self.depth and self.evaluationFunction
+    """
+    def maxValue(state, depth, agentIndex, alpha, beta):
+      depth -= 1
+      if depth < 0 or state.isLose() or state.isWin():
+        return (self.evaluationFunction(state), None)
+      v = float("-inf")
+      for action in state.getLegalActions(agentIndex):
+        successor = state.generateSuccessor(agentIndex, action)
+        score = minValue(successor, depth, agentIndex+1, alpha, beta)[0]
+        if score > v:
+          v = score
+          maxAction = action
+        if v > beta:
+          return (v, maxAction)
+        alpha = max(alpha, v)
+      return (v, maxAction)
+
+    def minValue(state, depth, agentIndex, alpha, beta):
+      if depth < 0 or state.isLose() or state.isWin():
+        return (self.evaluationFunction(state), None)
+      v = float("inf")
+      evalfunc, nextAgent = (
+          minValue, agentIndex+1) if agentIndex < state.getNumAgents()-1 else (maxValue, 0)
+      for action in state.getLegalActions(agentIndex):
+        successor = state.generateSuccessor(agentIndex, action)
+        score = evalfunc(successor, depth, nextAgent, alpha, beta)[0]
+        if score < v:
+          v = score
+          minAction = action
+        if v < alpha:
+          return (v, minAction)
+        beta = min(beta, v)
+      return (v, minAction)
+
+    return maxValue(gameState, self.depth, 0, float("-inf"), float("inf"))[1]
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):

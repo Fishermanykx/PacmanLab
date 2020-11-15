@@ -227,17 +227,138 @@ class MinimaxAgent(MultiAgentSearchAgent):
     return cost
 
 
+# class AlphaBetaAgent(MultiAgentSearchAgent):
+#   """
+#       Your minimax agent with alpha-beta pruning (question 3)
+#     """
+
+#   def getAction(self, gameState):
+#     """
+#           Returns the minimax action using self.depth and self.evaluationFunction
+#         """
+#     "*** YOUR CODE HERE ***"
+#     res_action = ''  # Pacman 将要采取的动作
+#     ghost_num = gameState.getNumAgents() - 1  # 第一个 Agent 是pacman
+#     pacman_max = float('-Inf')  # 寻找到的最大值的上界
+#     pacman_actions = gameState.getLegalActions(0)
+
+#     self.alpha = float('-Inf')
+#     self.beta = float('Inf')
+#     self.actions = ['']
+
+#     # for action in pacman_actions:
+#     #   if action == "Stop":
+#     #     continue
+#     #   cur_depth = 0
+#     #   cur_max = self.minValue(gameState.generateSuccessor(
+#     #       self.index, action), cur_depth, 1)  # 从 No.1 ghost 开始找，向下递归
+#     #   if cur_max > pacman_max:
+#     #     pacman_max = cur_max
+#     #     res_action = action
+
+#     # return res_action
+#     # util.raiseNotDefined()
+#     self.maxValue(gameState, -1)
+#     return self.actions[0]
+
+#   def minValue(self, gameState, cur_depth, ghost_index):
+#     '''
+#     description: 当前结点为min结点时的代价，注意多个 ghost 带来的多 min 层的情形
+#     param {*}
+#     return {*} cost: 当前结点的代价
+#     '''
+#     cost = float('Inf')
+
+#     if gameState.isWin() or gameState.isLose():
+#       return self.evaluationFunction(gameState)
+
+#     agentActions = gameState.getLegalActions(ghost_index)
+#     for action in agentActions:
+#       if ghost_index == gameState.getNumAgents()-1:
+#         cost = min(cost, self.maxValue(
+#             gameState.generateSuccessor(ghost_index, action), cur_depth))
+#       else:
+#         cost = min(cost, self.minValue(gameState.generateSuccessor(
+#             ghost_index, action), cur_depth, ghost_index+1))
+
+#       if cost < self.alpha:
+#         return cost
+#       self.beta = min(self.beta, cost)
+
+#     return cost
+
+#   def maxValue(self, gameState, cur_depth):
+#     '''
+#     description: 当前结点为max结点时的代价
+#     param {*}
+#     return {*} cost: 当前结点的代价
+#     '''
+#     cost = float('-Inf')
+#     cur_depth += 1
+#     cur_action = ''
+
+#     # 递归基
+#     if gameState.isWin() or gameState.isLose() or cur_depth >= self.depth:
+#       return self.evaluationFunction(gameState)
+
+#     agentActions = gameState.getLegalActions(self.index)
+#     for action in agentActions:
+#       min_val = self.minValue(gameState.generateSuccessor(
+#           self.index, action), cur_depth, 1)
+#       if min_val >= cost:
+#         cost = min_val
+#         cur_action = action
+
+#       if cost > self.beta:
+#         self.actions[0] = cur_action
+#         return cost
+#       self.alpha = max(cost, self.alpha)
+
+#     self.actions[0] = cur_action
+#     return cost
 class AlphaBetaAgent(MultiAgentSearchAgent):
   """
-      Your minimax agent with alpha-beta pruning (question 3)
-    """
+    Your minimax agent with alpha-beta pruning (question 3)
+  """
 
   def getAction(self, gameState):
     """
-          Returns the minimax action using self.depth and self.evaluationFunction
-        """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+      Returns the minimax action using self.depth and self.evaluationFunction
+    """
+    def maxValue(state, depth, agentIndex, alpha, beta):
+      depth -= 1
+      if depth < 0 or state.isLose() or state.isWin():
+        return (self.evaluationFunction(state), None)
+      v = float("-inf")
+      for action in state.getLegalActions(agentIndex):
+        successor = state.generateSuccessor(agentIndex, action)
+        score = minValue(successor, depth, agentIndex+1, alpha, beta)[0]
+        if score > v:
+          v = score
+          maxAction = action
+        if v > beta:
+          return (v, maxAction)
+        alpha = max(alpha, v)
+      return (v, maxAction)
+
+    def minValue(state, depth, agentIndex, alpha, beta):
+      if depth < 0 or state.isLose() or state.isWin():
+        return (self.evaluationFunction(state), None)
+      v = float("inf")
+      evalfunc, nextAgent = (
+          minValue, agentIndex+1) if agentIndex < state.getNumAgents()-1 else (maxValue, 0)
+      for action in state.getLegalActions(agentIndex):
+        successor = state.generateSuccessor(agentIndex, action)
+        score = evalfunc(successor, depth, nextAgent, alpha, beta)[0]
+        if score < v:
+          v = score
+          minAction = action
+        if v < alpha:
+          return (v, minAction)
+        beta = min(beta, v)
+      return (v, minAction)
+
+    return maxValue(gameState, self.depth, 0, float("-inf"), float("inf"))[1]
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
